@@ -3,7 +3,11 @@ node_modules/
 /.cache
 /functions/\[\[path\]\].js
 /functions/\[\[path\]\].js.map
-/public/build
+
 .dev.vars
 
 .idea/
+public/build/
+public/blog/
+public/images/blog/
+yarn-error.log

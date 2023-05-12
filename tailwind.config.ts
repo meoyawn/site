@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss"
+import { type Config } from "tailwindcss"
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -6,5 +6,5 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 } satisfies Config

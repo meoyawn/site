@@ -1,4 +1,4 @@
 contentDir: blog/
-mdOutDir: public/build/blog/
-imgOutDir: public/build/images/blog/
-imgURLPrefix: /build/images/blog/
+mdOutDir: public/blog/
+imgOutDir: public/images/blog/
+imgURLPrefix: /images/blog/
