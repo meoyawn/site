@@ -60,13 +60,9 @@ export default function Article(): JSX.Element {
   const { html, post } = useLoaderData<typeof loader>()
 
   return (
-    <main className="mx-auto max-w-prose">
-      <h1 className="mb-8 text-3xl font-bold">{post.title}</h1>
-
-      <article
-        className="prose lg:prose-lg"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-    </main>
+    <article className="prose mx-auto max-w-prose lg:prose-lg">
+      <h1>{post.title}</h1>
+      <div dangerouslySetInnerHTML={{ __html: html }} />
+    </article>
   )
 }

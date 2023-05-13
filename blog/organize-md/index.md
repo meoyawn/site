@@ -1,62 +1,49 @@
 ---
-title: Organizing Markdown for Next.js and Remix Websites with `organize-md`
-description: Notes on organizing Markdown content
-date: 2023-05-11
+title: Organizing Markdown for Next.js and Remix Websites with the `organize-md` Script
+description: Discover how to optimize content organization and improve load times on your Next.js or Remix websites using the `organize-md` script.
+date: 2023-05-13
 ---
 
-As a developer, I'm always looking for ways to streamline my workflow. Whether it's building a personal project or
-working on a large-scale application, efficiency is key. For my personal blog and some smaller projects, I use Markdown
-heavily. It's a simple and efficient way to write content, especially when combined with static site generators like
-Next.js or Remix.
+If you're building static sites with Markdown, like blogs or documentation sites, on Next.js or Remix, you might have
+come across the issue of managing your content structure effectively. Today, I want to introduce a script that can help
+you streamline your workflow: `organize-md`.
 
-However, managing and organizing Markdown files for these platforms can sometimes be a bit cumbersome, especially when
-we want to optimize assets for better loading performance. That's why I created a script that takes care of this entire
-process for me.
+## What is `organize-md`?
 
-## Introducing `organize-md`
+`organize-md` is a TypeScript script that organizes your Markdown folder structure, making it ready for static
+deployment. It reads the contents of a specified directory, processes Markdown files and images, and outputs the
+modified Markdown files and images to specified output directories. In addition, it also generates a `meta.json` file
+containing metadata about the processed Markdown files.
 
-I recently developed a script called `organize-md`. It's a powerful tool that processes my Markdown files and images,
-and outputs the modified Markdown files and images to specified output directories. The script also generates
-a `meta.json` file containing metadata about the processed Markdown files.
+This script is handy when you have a lot of content that needs to be organized systematically, especially for large
+blogs or documentation sites.
 
-The goal of this script is to prepare my Markdown files and associated assets (like images) for deployment, making it
-easier to manage and maintain my content.
+## How does it work?
 
-## How `organize-md` works
+The script works by taking a JSON configuration file as an argument. Here's an example of a typical input structure:
 
-The script reads the contents of a specified directory and processes all Markdown files and images. It also assigns a
-unique hash to each image based on its content, which is added to the image filename. This feature is especially useful
-for cache-busting when the image content changes.
-
-The processed files are then outputted to specified directories, and a `meta.json` file is generated containing metadata
-about the processed Markdown files.
-
-### Example Usage
-
-For instance, consider this initial folder structure:
-
-```
-content
+```txt
 ├── android
-│ ├── googleplay.svg
-│ ├── index.md
-│ └── share.jpg
+│   ├── googleplay.svg
+│   ├── index.md
+│   └── share.jpg
 ├── ios
-│ ├── appstore.svg
-│ ├── gallery.jpeg
-│ ├── index.md
-│ ├── settings.jpeg
-│ └── share.jpg
+│   ├── appstore.svg
+│   ├── gallery.jpeg
+│   ├── index.md
+│   ├── settings.jpeg
+│   └── share.jpg
 ├── publishing
-│ ├── index.md
-│ ├── itunes.png
-│ ├── rsscopy.png
-│ └── spotify.png
+│   ├── index.md
+│   ├── itunes.png
+│   ├── rsscopy.png
+│   └── spotify.png
 └── tutorial
-└── index.md
+    └── index.md
 ```
 
-By providing a JSON configuration file like this:
+You would first need to create a configuration file (`config.js` or `config.json`), where you specify the directories
+the script should work with:
 
 ```json
 {
@@ -67,16 +54,18 @@ By providing a JSON configuration file like this:
 }
 ```
 
-And running `organize-md` with the configuration file:
+With the configuration file in place, you can then run the `organize-md` script:
 
 ```sh
 yarn add organize-md
 yarn organize-md config.json
 ```
 
-We get the following output structure:
+The script will process the files in your content directory, hash and rename your images, and then output the organized
+Markdown and image files in the directories specified in your configuration file. Here's an example of the output
+structure:
 
-```
+```txt
 public/guides
 ├── android.md
 ├── ios.md
@@ -86,33 +75,31 @@ public/guides
 
 public/images/guides
 ├── android
-│ ├── googleplay-b761f3.svg
-│ └── share-58f774.jpg
+│   ├── googleplay-b761f3.svg
+│   └── share-58f774.jpg
 ├── ios
-│ ├── appstore-b60244.svg
-│ ├── gallery-aca28c.jpeg
-│ ├── settings-f10556.jpeg
-│ └── share-60e923.jpg
+│   ├── appstore-b60244.svg
+│   ├── gallery-aca28c.jpeg
+│   ├── settings-f10556.jpeg
+│   └── share-60e923.jpg
 └── publishing
-├── itunes-f1bf0c.png
-├── rsscopy-0f6e3f.png
-└── spotify-ba1398.png
+    ├── itunes-f1bf0c.png
+    ├── rsscopy-0f6e3f.png
+    └── spotify-ba1398.png
 ```
 
-## Framework Configuration for Optimized Image Loading
+## Optimal Image Loading in Next.js and Remix
 
-With the image files now having unique hashes, we can add immutable caching rules for these files in our website
-configuration. Immutable caching allows these files to be stored in the browser's cache indefinitely, improving load
-times and reducing bandwidth usage. Here's how to do it in Next.js and Remix:
+To take full advantage of this script and leverage browser caching, you can add some configurations in your framework.
 
 ### Next.js
 
-In `next.config.js` `headers()` array, add the following:
+In `next.config.js`, add the following to your `headers()` array:
 
 ```js
 ;[
   {
-    source: "/images/:path*",
+    source: "/images/*",
     headers: [
       {
         key: "Cache-Control",
@@ -123,26 +110,39 @@ In `next.config.js` `headers()` array, add the following:
 ]
 ```
 
-Where `"/images/:path*"` is the `imgURLPrefix` value from the config file. More about this feature can be found in
-the [Next.js headers documentation](https://nextjs.org/docs/pages/api-reference/next-config-js/headers).
+Where `/images/*` matches the `imgURLPrefix` value from the config file
 
-### Remix
+Here, you're instructing Next.js to add a `Cache-Control` header to any HTTP responses where the requested URL matches
+the pattern `/images/*`. This tells the browser to cache the images for a year (`max-age=31536000`), and that the file
+will not change during this period (`immutable`).
 
-If you're deploying to Cloudflare Pages, in the `public/_headers` file, add this:
+Check the [Next.js headers documentation](https://nextjs.org/docs/pages/api-reference/next-config-js/headers) for more
+details on this configuration.
 
-```
+### Remix (deployed to Cloudflare Pages)
+
+If you're using Remix and deploying to Cloudflare Pages, you can set similar caching headers in your `public/_headers`
+file:
+
+```txt
 /images/*
     Cache-Control: public, max-age=31536000, immutable
 ```
 
-Where `"/images/*"` is the `imgURLPrefix` value from the config file. More about this feature can be found in
-the [Cloudflare Pages headers documentation](https://developers.cloudflare.com/pages/platform/headers/).
+Again, make sure `/images/*` matches the `imgURLPrefix` value from the config file.
 
-## Wrapping up
+This configuration will apply the same caching policy as the Next.js example above for all images served from URLs that
+match the pattern `/images/*`.
 
-By utilizing `organize-md`, we can streamline the way we handle Markdown files and images in our Next.js and Remix
-websites. This tool not only organizes our files, but it also helps us optimize our site's loading speed by providing a
-way to implement efficient caching strategies.
+Refer to the [Cloudflare Pages headers documentation](https://developers.cloudflare.com/pages/platform/headers/) for
+more information.
 
-Whether you're running a personal blog or managing a larger project, give `organize-md` a try and see how it can help to
-improve your workflow.
+## Wrapping Up
+
+By utilizing the `organize-md` script, you can streamline your content organization process, ensuring your Markdown
+files and images are systematically organized and ready for static deployment. Moreover, by properly configuring your
+Next.js or Remix app, you can leverage browser caching for your images, speeding up your site load times and improving
+your user's experience.
+
+Remember, efficient content management and optimal performance are key to building successful static sites. Happy
+coding!
