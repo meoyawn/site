@@ -1,15 +1,23 @@
-import React from "react"
-import type { LoaderArgs, TypedResponse } from "@remix-run/cloudflare"
-import { json } from "@remix-run/cloudflare"
-import { marked } from "marked"
-import grayMatter from "gray-matter"
-import { relativeFetch } from "../lib/remix"
-import type { Post } from "./blog._index"
+import hljsTheme from "highlight.js/styles/github-dark-dimmed.css"
+
 import { useLoaderData } from "@remix-run/react"
+import React, { type JSX } from "react"
+import grayMatter from "gray-matter"
+import {
+  json,
+  type LinksFunction,
+  type LoaderArgs,
+  type TypedResponse,
+} from "@remix-run/cloudflare"
+import { type Post } from "./blog._index"
+import { relativeFetch } from "../lib/remix"
+import hljs from "highlight.js"
+
+import { marked } from "marked"
 // @ts-ignore types not posted
 import { gfmHeadingId } from "marked-gfm-heading-id"
-
-type MarkedOptions = marked.MarkedOptions
+// @ts-ignore types not posted
+import { markedHighlight } from "marked-highlight"
 
 interface Parsed {
   readonly post: Post
@@ -17,8 +25,17 @@ interface Parsed {
 }
 
 marked.use(gfmHeadingId())
+marked.use(
+  markedHighlight({
+    langPrefix: "hljs language-",
+    highlight: (code: string, lang: string) => {
+      const language = hljs.getLanguage(lang) ? lang : "plaintext"
+      return hljs.highlight(code, { language }).value
+    },
+  }),
+)
 
-const opts: MarkedOptions = { mangle: false }
+const opts: marked.MarkedOptions = { mangle: false }
 
 export const loader = async ({
   params,
@@ -32,15 +49,22 @@ export const loader = async ({
   })
 }
 
-export default function Article() {
+export const links: LinksFunction = () => [
+  {
+    rel: "stylesheet",
+    href: hljsTheme,
+  },
+]
+
+export default function Article(): JSX.Element {
   const { html, post } = useLoaderData<typeof loader>()
 
   return (
     <main className="mx-auto max-w-prose">
-      <h1>{post.title}</h1>
+      <h1 className="mb-8 text-3xl font-bold">{post.title}</h1>
 
       <article
-        className="prose prose-slate lg:prose-lg"
+        className="prose lg:prose-lg"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </main>
