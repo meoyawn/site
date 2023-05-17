@@ -8,34 +8,17 @@ import {
   type LinksFunction,
   type LoaderArgs,
   type TypedResponse,
+  type V2_MetaFunction,
 } from "@remix-run/cloudflare"
 import { type Post } from "./blog._index"
-import { relativeFetch } from "../lib/remix"
-import hljs from "highlight.js"
-
-import { marked } from "marked"
-// @ts-ignore types not posted
-import { gfmHeadingId } from "marked-gfm-heading-id"
-// @ts-ignore types not posted
-import { markedHighlight } from "marked-highlight"
+import { hostURL, type HttpPath, relativeFetch } from "../lib/remix"
+import { md2html } from "../app/marked"
 
 interface Parsed {
+  readonly host: string
   readonly post: Post
   readonly html: string
 }
-
-marked.use(gfmHeadingId())
-marked.use(
-  markedHighlight({
-    langPrefix: "hljs language-",
-    highlight: (code: string, lang: string) => {
-      const language = hljs.getLanguage(lang) ? lang : "plaintext"
-      return hljs.highlight(code, { language }).value
-    },
-  }),
-)
-
-const opts: marked.MarkedOptions = { mangle: false }
 
 export const loader = async ({
   params,
@@ -44,8 +27,9 @@ export const loader = async ({
   const r = await relativeFetch(request, `/blog/${params.slug}.md`)
   const { content, data } = grayMatter(await r.text())
   return json({
-    html: marked(content, opts),
+    html: md2html(content),
     post: data as Post,
+    host: request.headers.get("host") || "localhost:3000",
   })
 }
 
@@ -56,11 +40,22 @@ export const links: LinksFunction = () => [
   },
 ]
 
+export const meta: V2_MetaFunction<typeof loader> = ({
+  data: { host, post },
+}) => [
+  { title: post.title },
+  { name: "description", content: post.description },
+  {
+    name: "og:image",
+    content: hostURL(host, post.image as HttpPath),
+  },
+]
+
 export default function Article(): JSX.Element {
   const { html, post } = useLoaderData<typeof loader>()
 
   return (
-    <article className="prose mx-auto max-w-prose lg:prose-lg">
+    <article className="prose mx-auto max-w-prose">
       <h1>{post.title}</h1>
       <div dangerouslySetInnerHTML={{ __html: html }} />
     </article>

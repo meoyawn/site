@@ -1,4 +1,5 @@
 contentDir: blog/
 mdOutDir: public/blog/
 imgOutDir: public/images/blog/
+# TODO remove
 imgURLPrefix: /images/blog/

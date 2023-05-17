@@ -1,18 +1,18 @@
-import React from "react"
+import { relativeFetch } from "../lib/remix"
 import {
   json,
   type LoaderArgs,
   type TypedResponse,
 } from "@remix-run/cloudflare"
 import { NavLink, useLoaderData } from "@remix-run/react"
-
-import { relativeFetch } from "../lib/remix"
+import React, { type JSX } from "react"
 
 export interface Post {
   readonly draft?: boolean
   readonly date: string
   readonly title: string
   readonly description: string
+  readonly image: string
 }
 
 interface WithSlug extends Post {
@@ -38,7 +38,7 @@ export const loader = async ({
   )
 }
 
-export default function Blog() {
+export default function Blog(): JSX.Element {
   const posts = useLoaderData<typeof loader>()
 
   return (
