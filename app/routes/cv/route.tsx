@@ -77,7 +77,7 @@ const Header = ({
   location: string
 }) => (
   <section>
-    <h1 className="mb-0 font-normal">{name}</h1>
+    <h1 className="mb-0">{name}</h1>
     <p className="mt-0">{location}</p>
 
     <div className="grid grid-cols-2">

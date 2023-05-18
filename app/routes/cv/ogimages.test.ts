@@ -33,6 +33,7 @@ test("write images", async () => {
     [
       ...Object.values(orgs).map(x => x.url),
       ...Object.values(products).map(x => x.url),
+      "https://github.com/meoyawn",
     ].map(url => ogImage(url).then(og => [url, og])),
   )
   const path = pathJoin(import.meta.dir, "ogimages.json")

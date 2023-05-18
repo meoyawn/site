@@ -39,9 +39,7 @@ export const links: LinksFunction = () => [
   },
 ]
 
-export const meta: V2_MetaFunction<typeof loader> = ({
-  data: { host, post },
-}) => [
+export const meta: V2_MetaFunction<Parsed> = ({ data: { host, post } }) => [
   { title: post.title },
   { name: "description", content: post.description },
   {
@@ -51,7 +49,7 @@ export const meta: V2_MetaFunction<typeof loader> = ({
 ]
 
 export default function Article(): JSX.Element {
-  const { html, post } = useLoaderData<typeof loader>()
+  const { html, post } = useLoaderData<Parsed>()
 
   return (
     <article className="prose prose-blue mx-6 max-w-prose md:mx-auto">

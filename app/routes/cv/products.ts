@@ -77,6 +77,10 @@ export const products = {
     name: "organize-md",
     url: "https://github.com/meoyawn/organize-md",
   },
+  muscovy: {
+    name: "Muscovy",
+    url: "https://moscow-cancer.vercel.app",
+  },
 } as const
 
 export type ProductID = keyof typeof products
