@@ -3,6 +3,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "remix build",
+    "clean": "rm -rf .cache/ functions/ public/build/",
+    "deploy": "wrangler pages publish ./public --commit-dirty=true",
     "dev": "remix build && concurrently \"yarn:dev:*\"",
     "dev:blog": "organize-md --watch organize-blog.yaml",
     "dev:remix": "remix watch",
@@ -10,7 +12,7 @@
     "start": "cross-env NODE_ENV=production yarn wrangler",
     "test": "bun test",
     "typecheck": "tsc",
-    "wrangler": "wrangler pages dev ./public --compatibility-date=2023-05-12 --log-level debug"
+    "wrangler": "wrangler pages dev ./public --compatibility-date=2023-05-12"
   },
   "dependencies": {
     "@remix-run/cloudflare": "^1.16.0",

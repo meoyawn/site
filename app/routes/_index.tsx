@@ -1,5 +1,11 @@
-import ogimages from "../cv/ogimages.json"
+import ogimages from "./cv/ogimages.json"
+import { type V2_MetaFunction } from "@remix-run/cloudflare"
 import React, { type JSX } from "react"
+
+export const meta: V2_MetaFunction = () => [
+  { title: "Adel Nizamutdinov" },
+  { name: "description", content: "Personal website" },
+]
 
 const posts: ReadonlyArray<{
   href: string
@@ -23,8 +29,8 @@ const posts: ReadonlyArray<{
   },
 ]
 
-export const BSection = (): JSX.Element => (
-  <div className="space-y-6 px-6 lg:px-8">
+const Projects = (): JSX.Element => (
+  <section className="space-y-6 px-6 lg:px-8">
     <h2 className="text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl">
       Projects
     </h2>
@@ -64,5 +70,21 @@ export const BSection = (): JSX.Element => (
         </div>
       ))}
     </div>
-  </div>
+  </section>
 )
+
+export default function Index(): JSX.Element {
+  return (
+    <main className="mx-auto max-w-7xl space-y-8 sm:space-y-12">
+      <section className="space-y-2 px-6 lg:px-8">
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-800 sm:text-4xl">
+          Adel Nizamutdinov
+        </h1>
+
+        <p className="text-lg">I make software</p>
+      </section>
+
+      <Projects />
+    </main>
+  )
+}
