@@ -1,8 +1,6 @@
-import hljsTheme from "highlight.js/styles/github-dark-dimmed.css"
-
-import { useLoaderData } from "@remix-run/react"
-import React, { type JSX } from "react"
-import grayMatter from "gray-matter"
+import { md2html } from "../app/marked"
+import { hostURL, type HttpPath, relativeFetch } from "../lib/remix"
+import { type Post } from "./articles._index"
 import {
   json,
   type LinksFunction,
@@ -10,9 +8,10 @@ import {
   type TypedResponse,
   type V2_MetaFunction,
 } from "@remix-run/cloudflare"
-import { type Post } from "./blog._index"
-import { hostURL, type HttpPath, relativeFetch } from "../lib/remix"
-import { md2html } from "../app/marked"
+import { useLoaderData } from "@remix-run/react"
+import grayMatter from "gray-matter"
+import hljsTheme from "highlight.js/styles/github-dark-dimmed.css"
+import React, { type JSX } from "react"
 
 interface Parsed {
   readonly host: string
@@ -55,7 +54,7 @@ export default function Article(): JSX.Element {
   const { html, post } = useLoaderData<typeof loader>()
 
   return (
-    <article className="prose mx-auto max-w-prose">
+    <article className="prose prose-blue mx-6 max-w-prose md:mx-auto">
       <h1>{post.title}</h1>
       <div dangerouslySetInnerHTML={{ __html: html }} />
     </article>

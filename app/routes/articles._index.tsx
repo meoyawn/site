@@ -1,8 +1,10 @@
+import { Strings } from "../app/strings"
 import { relativeFetch } from "../lib/remix"
 import {
   json,
   type LoaderArgs,
   type TypedResponse,
+  type V2_MetaFunction,
 } from "@remix-run/cloudflare"
 import { NavLink, useLoaderData } from "@remix-run/react"
 import React, { type JSX } from "react"
@@ -38,16 +40,20 @@ export const loader = async ({
   )
 }
 
+export const meta: V2_MetaFunction<typeof loader> = () => [
+  { title: `Article Index - ${Strings.name}` },
+]
+
 export default function Blog(): JSX.Element {
   const posts = useLoaderData<typeof loader>()
 
   return (
-    <main>
-      <h1>Posts</h1>
+    <main className="prose prose-blue mx-6 max-w-prose md:mx-auto">
+      <h1>Latest articles</h1>
       <ul>
         {posts.map(post => (
           <li key={post.slug}>
-            <NavLink to={`/blog/${post.slug}`}>{post.title}</NavLink>
+            <NavLink to={`/articles/${post.slug}`}>{post.title}</NavLink>
           </li>
         ))}
       </ul>

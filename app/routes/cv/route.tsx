@@ -1,4 +1,5 @@
 import { md2html } from "../../app/marked"
+import { Strings } from "../../app/strings"
 import { type AwardProps, awards } from "./awards"
 import { type EducationProps, mdEducation } from "./education"
 import { type ExperienceProps, mdExperience } from "./experience"
@@ -37,11 +38,8 @@ export const loader = (): TypedResponse<Props> => {
   return json({ experience: exp, education: edu })
 }
 
-const name = "Adel Nizamutdinov"
-
 export const meta: V2_MetaFunction<typeof loader> = () => [
-  { title: `CV - ${name}` },
-  { name: "description", content: "Making new stuff" },
+  { title: `CV - ${Strings.name}` },
 ]
 
 const IconLink = ({
@@ -284,7 +282,7 @@ export default function CV(): React.JSX.Element {
   return (
     <main className="prose prose-sky m-6 max-w-none print:prose-sm print:m-0 sm:m-12 md:m-16">
       <Header
-        name={name}
+        name={Strings.name}
         location="United States or Remote"
         email="mail@adel.lol"
         phone={undefined}

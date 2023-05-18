@@ -1,6 +1,5 @@
 import hljs from "highlight.js"
 import { marked } from "marked"
-
 // @ts-ignore types not posted
 import { gfmHeadingId } from "marked-gfm-heading-id"
 // @ts-ignore types not posted
