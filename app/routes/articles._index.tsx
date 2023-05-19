@@ -1,5 +1,5 @@
 import { Strings } from "../app/strings"
-import { relativeFetch } from "../lib/remix"
+import { mergeParentMeta, relativeFetch } from "../lib/remix"
 import {
   json,
   type LoaderArgs,
@@ -29,20 +29,14 @@ export const loader = async ({
   return json(
     Object.entries(unsorted)
       .filter(([, post]) => !post.draft)
-      .map(
-        ([slug, post]) =>
-          ({
-            slug,
-            ...post,
-          } satisfies WithSlug),
-      )
+      .map(([slug, post]) => ({ ...post, slug } satisfies WithSlug))
       .sort((a, b) => Date.parse(b.date) - Date.parse(a.date)),
   )
 }
 
-export const meta: V2_MetaFunction<typeof loader> = () => [
+export const meta: V2_MetaFunction<typeof loader> = mergeParentMeta(() => [
   { title: `Article Index - ${Strings.name}` },
-]
+])
 
 export default function Blog(): JSX.Element {
   const posts = useLoaderData<typeof loader>()

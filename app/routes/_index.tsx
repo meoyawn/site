@@ -1,11 +1,12 @@
+import { mergeParentMeta } from "../lib/remix"
 import ogimages from "./cv/ogimages.json"
 import { type V2_MetaFunction } from "@remix-run/cloudflare"
 import React, { type JSX } from "react"
 
-export const meta: V2_MetaFunction = () => [
+export const meta: V2_MetaFunction = mergeParentMeta(() => [
   { title: "Adel Nizamutdinov" },
   { name: "description", content: "Personal website" },
-]
+])
 
 const posts: ReadonlyArray<{
   href: string

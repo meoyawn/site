@@ -7,7 +7,7 @@ export interface Org {
 export const orgs = {
   agape: {
     name: "Agape Labs",
-    url: "https://adel.lol",
+    url: "https://adelnz.com",
   },
   wheely: {
     name: "Wheely",

@@ -1,5 +1,6 @@
 import { md2html } from "../../app/marked"
 import { Strings } from "../../app/strings"
+import { mergeParentMeta } from "../../lib/remix"
 import { type AwardProps, awards } from "./awards"
 import { type EducationProps, mdEducation } from "./education"
 import { type ExperienceProps, mdExperience } from "./experience"
@@ -38,9 +39,9 @@ export const loader = (): TypedResponse<Props> => {
   return json({ experience: exp, education: edu })
 }
 
-export const meta: V2_MetaFunction<typeof loader> = () => [
+export const meta: V2_MetaFunction<typeof loader> = mergeParentMeta(() => [
   { title: `CV - ${Strings.name}` },
-]
+])
 
 const IconLink = ({
   href,

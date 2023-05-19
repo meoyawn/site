@@ -1,3 +1,9 @@
+import {
+  type V2_HtmlMetaDescriptor,
+  type V2_MetaFunction,
+} from "@remix-run/cloudflare"
+import { type V2_ServerRuntimeMetaArgs } from "@remix-run/server-runtime"
+
 export type HttpPath = `/${string}` | ""
 export type HttpURL = `http${"s" | ""}://${string}${HttpPath}`
 
@@ -16,3 +22,13 @@ export const relativeFetch = (
   path?: HttpPath,
   init?: RequestInit,
 ): Promise<Response> => fetch(absURL(req, path), init)
+
+export const parentMeta = (
+  matches: V2_ServerRuntimeMetaArgs["matches"],
+): ReadonlyArray<V2_HtmlMetaDescriptor> =>
+  matches.flatMap(match => match.meta ?? [])
+
+export const mergeParentMeta =
+  <T>(f: V2_MetaFunction<T>): V2_MetaFunction<T> =>
+  arg =>
+    [...parentMeta(arg.matches), ...f(arg)]
