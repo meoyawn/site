@@ -1,6 +1,6 @@
 import { md2html } from "../../app/marked"
 import { Strings } from "../../app/strings"
-import { mergeParentMeta } from "../../lib/remix"
+import { type HttpURL, mergeParentMeta } from "../../lib/remix"
 import { type AwardProps, awards } from "./awards"
 import { type EducationProps, mdEducation } from "./education"
 import { type ExperienceProps, mdExperience } from "./experience"
@@ -47,10 +47,7 @@ const IconLink = ({
   href,
   children,
 }: {
-  href:
-    | `mailto:${string}@${string}.${string}`
-    | `https://${string}`
-    | `tel:${string}`
+  href: `mailto:${string}@${string}.${string}` | HttpURL | `tel:${string}`
   children: ReactNode
 }): JSX.Element => (
   <a className="space-x-1" target="_blank" rel="noreferrer" href={href}>
@@ -72,7 +69,7 @@ const Header = ({
 }: {
   email: `${string}@${string}.${string}`
   phone?: `+${string}`
-  website: `https://${string}`
+  website: HttpURL
   linkedin: string
   name: string
   location: string
@@ -285,9 +282,9 @@ export default function CV(): React.JSX.Element {
       <Header
         name={Strings.name}
         location="United States or Remote"
-        email="mail@adel.lol"
+        email={orgs.agape.email}
         phone={undefined}
-        website="https://adel.lol"
+        website={orgs.agape.url}
         linkedin="adelnizamuddin"
       />
 

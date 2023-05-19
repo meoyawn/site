@@ -8,6 +8,7 @@ export const orgs = {
   agape: {
     name: "Agape Labs",
     url: "https://adelnz.com",
+    email: "mail@adelnz.com",
   },
   wheely: {
     name: "Wheely",
