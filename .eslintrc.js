@@ -2,7 +2,9 @@
 module.exports = {
   extends: [
     "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "@remix-run/eslint-config",
     "@remix-run/eslint-config/node",
   ],
@@ -17,7 +19,7 @@ module.exports = {
 
     "@typescript-eslint/require-array-sort-compare": "error",
     "@typescript-eslint/no-for-in-array": "error",
-    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-var-requires": "error",
     "@typescript-eslint/ban-ts-comment": [
       "error",
       {

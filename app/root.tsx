@@ -24,20 +24,22 @@ const hostURL = (host: string, path?: string): string => {
   return `${proto}://${host}${path ?? ""}`
 }
 
-interface Props {
-  host: string
-}
-
 // noinspection JSUnusedGlobalSymbols
-export const loader = ({ request }: LoaderArgs): TypedResponse<Props> =>
+export const loader = ({
+  request,
+}: LoaderArgs): TypedResponse<{
+  host: string
+}> =>
   json({
     host: request.headers.get("host") || "localhost:3000",
   })
 
 // noinspection JSUnusedGlobalSymbols
-export const meta: V2_MetaFunction<Props> = ({ data }) => [
-  { name: "og:image", content: hostURL(data.host, "/og.jpg") },
-]
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+  if (!data) throw new Error("No data")
+
+  return [{ name: "og:image", content: hostURL(data.host, "/og.jpg") }]
+}
 
 // noinspection JSUnusedGlobalSymbols
 export const links: LinksFunction = () => [

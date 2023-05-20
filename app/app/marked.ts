@@ -4,15 +4,16 @@ import { marked } from "marked"
 import { gfmHeadingId } from "marked-gfm-heading-id"
 import { markedHighlight } from "marked-highlight"
 
-marked.use(gfmHeadingId())
 marked.use(
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  gfmHeadingId() as marked.MarkedExtension,
   markedHighlight({
     langPrefix: "hljs language-",
     highlight: (code: string, lang: string) => {
       const language = hljs.getLanguage(lang) ? lang : "plaintext"
       return hljs.highlight(code, { language }).value
     },
-  }),
+  }) as marked.MarkedExtension,
 )
 
 const opts: marked.MarkedOptions = { mangle: false }

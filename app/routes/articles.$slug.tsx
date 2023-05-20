@@ -13,16 +13,18 @@ import grayMatter from "gray-matter"
 import hljsTheme from "highlight.js/styles/github-dark-dimmed.css"
 import React, { type JSX } from "react"
 
-interface Parsed {
-  readonly host: string
-  readonly post: Post
-  readonly html: string
-}
-
 export const loader = async ({
   params,
   request,
-}: LoaderArgs): Promise<TypedResponse<Parsed>> => {
+}: LoaderArgs): Promise<
+  TypedResponse<{
+    host: string
+    post: Post
+    html: string
+  }>
+> => {
+  if (!params.slug) throw new Error("Missing slug")
+
   const r = await relativeFetch(request, `/blog/${params.slug}.md`)
   const { content, data } = grayMatter(await r.text())
   return json({
@@ -39,17 +41,21 @@ export const links: LinksFunction = () => [
   },
 ]
 
-export const meta: V2_MetaFunction<Parsed> = ({ data: { host, post } }) => [
-  { title: post.title },
-  { name: "description", content: post.description },
-  {
-    name: "og:image",
-    content: hostURL(host, post.image as HttpPath),
-  },
-]
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+  if (!data) throw new Error("Missing data")
+  const { host, post } = data
+  return [
+    { title: post.title },
+    { name: "description", content: post.description },
+    {
+      name: "og:image",
+      content: hostURL(host, post.image as HttpPath),
+    },
+  ]
+}
 
 export default function Article(): JSX.Element {
-  const { html, post } = useLoaderData<Parsed>()
+  const { html, post } = useLoaderData<typeof loader>()
 
   return (
     <article className="prose prose-blue mx-6 max-w-prose md:mx-auto">
