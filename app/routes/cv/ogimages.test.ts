@@ -1,9 +1,9 @@
-import { orgs } from "./orgs"
-import { products } from "./products"
-import { test } from "bun:test"
-import { writeFile } from "fs/promises"
-import { parse } from "node-html-parser"
+import { readFile, writeFile } from "fs/promises"
 import { join as pathJoin } from "path"
+import { test } from "bun:test"
+import { load as yamlParse } from "js-yaml"
+import { parse } from "node-html-parser"
+import { type CvDoc } from "./types"
 
 const ogImage = async (url: string): Promise<string> => {
   const res = await fetch(url, { redirect: "follow" })
@@ -29,10 +29,15 @@ const ogImage = async (url: string): Promise<string> => {
 }
 
 test("write images", async () => {
+  const txt = await readFile("public/cv.yaml", "utf-8")
+  const { awards, education, experience } = yamlParse(txt) as CvDoc
+  const orgs = [...education, ...experience, ...awards].map(x => x.org)
+  const products = [...education, ...experience].flatMap(x => x.products)
+
   const pairs = await Promise.all(
     [
-      ...Object.values(orgs).map(x => x.url),
-      ...Object.values(products).map(x => x.url),
+      ...orgs.map(x => x.url),
+      ...products.map(x => x.url),
       "https://github.com/meoyawn",
     ].map(url => ogImage(url).then(og => [url, og])),
   )
