@@ -1,1 +1,1 @@
-given this yaml infer Typescript interfaces, export each, call the root one `CvDoc`, only respond with Typescript, no prose:
+given this yaml export Typescript interfaces, name the root `CvDoc`, only respond with Typescript, no prose:
