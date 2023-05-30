@@ -1,42 +1,52 @@
-import { md2html } from "../../app/marked"
-import { Strings } from "../../app/strings"
-import { type HttpURL, mergeParentMeta } from "../../lib/remix"
-import { type AwardProps, awards } from "./awards"
-import { type EducationProps, mdEducation } from "./education"
-import { type ExperienceProps, mdExperience } from "./experience"
-import images from "./ogimages.json"
-import { type Org, orgs } from "./orgs"
-import { type Product, products } from "./products"
-import { skills } from "./skills"
 import {
   json,
+  type LoaderArgs,
   type TypedResponse,
   type V2_MetaFunction,
 } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
+import { formatDuration, intervalToDuration } from "date-fns"
+import { load as yamlParse } from "js-yaml"
 import React, { type JSX, type ReactNode } from "react"
+import { md2html } from "../../app/marked"
+import { Strings } from "../../app/strings"
+import { mergeParentMeta, relativeFetch } from "../../lib/remix"
+import images from "./ogimages.json"
+import {
+  type Award,
+  type CvDoc,
+  type Education,
+  type Experience,
+} from "./types"
 
-interface ParsedExperience extends ExperienceProps {
+interface ParsedExperience extends Experience {
   html: string
 }
 
-interface ParsedEducation extends EducationProps {
+interface ParsedEducation extends Education {
   html: string
 }
 
 interface Props {
   experience: ParsedExperience[]
   education: ParsedEducation[]
+  cv: CvDoc
 }
 
-export const loader = (): TypedResponse<Props> => {
-  const exp = mdExperience.map(
-    e => ({ ...e, html: md2html(e.experienceMD) } satisfies ParsedExperience),
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<TypedResponse<Props>> => {
+  const r = await relativeFetch(request, "/cv.yaml")
+  const cv = yamlParse(await r.text()) as CvDoc
+
+  const exp = cv.experience.map(
+    e => ({ ...e, html: md2html(e.summaryMD) } satisfies ParsedExperience),
   )
-  const edu = mdEducation.map(
+  const edu = cv.education.map(
     e => ({ ...e, html: md2html(e.degreeMD) } satisfies ParsedEducation),
   )
-  return json({ experience: exp, education: edu })
+
+  return json({ experience: exp, education: edu, cv })
 }
 
 export const meta: V2_MetaFunction<typeof loader> = mergeParentMeta(() => [
@@ -47,7 +57,7 @@ const IconLink = ({
   href,
   children,
 }: {
-  href: `mailto:${string}@${string}.${string}` | HttpURL | `tel:${string}`
+  href: string
   children: ReactNode
 }): JSX.Element => (
   <a className="space-x-1" target="_blank" rel="noreferrer" href={href}>
@@ -67,9 +77,9 @@ const Header = ({
   name,
   location,
 }: {
-  email: `${string}@${string}.${string}`
-  phone?: `+${string}`
-  website: HttpURL
+  email: string
+  phone?: string
+  website: string
   linkedin: string
   name: string
   location: string
@@ -78,7 +88,7 @@ const Header = ({
     <h1 className="mb-0">{name}</h1>
     <p className="mt-0">{location}</p>
 
-    <div className="grid grid-cols-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2">
       <IconLink href={`mailto:${email}`}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -143,7 +153,7 @@ const ProductLink = ({
   product,
   images,
 }: {
-  product: Product
+  product: { name: string; url: string; archiveImgURL?: string }
   images: Record<string, string>
 }) => {
   const bgURL = product.archiveImgURL ?? images[product.url]
@@ -179,112 +189,74 @@ const OrgAndProducts = ({
   images,
   children,
 }: {
-  e: ExperienceProps | EducationProps | AwardProps
+  e: Experience | Education | Award
   images: Record<string, string>
   children: ReactNode
-}): JSX.Element => {
-  const org = orgs[e.org] as Org
+}): JSX.Element => (
+  <div className="flex flex-row gap-2">
+    <a
+      className="flex-shrink-0"
+      target="_blank"
+      rel="noreferrer"
+      href={e.org.url}
+    >
+      <h4 className="mb-0">
+        <img
+          loading="eager"
+          width={24}
+          height={24}
+          className="m-0 h-6 w-6 object-cover"
+          src={e.org.logoURL ?? images[e.org.url]}
+          alt={e.org.name}
+        />
+      </h4>
+    </a>
 
-  return (
-    <div className="flex flex-row gap-2">
-      <a
-        className="flex-shrink-0"
-        target="_blank"
-        rel="noreferrer"
-        href={org.url}
-      >
-        <h4 className="mb-0">
-          <img
-            loading="eager"
-            width={24}
-            height={24}
-            className="m-0 h-6 w-6 object-cover"
-            src={org.logoURL ?? images[org.url]}
-            alt={org.name}
-          />
-        </h4>
-      </a>
+    <div>
+      {children}
 
-      <div>
-        {children}
-
-        <div className="flex flex-row flex-wrap gap-1 print:hidden">
-          {e.products.map(p => (
-            <ProductLink key={p} product={products[p]} images={images} />
-          ))}
-        </div>
+      <div className="flex flex-row flex-wrap gap-1 print:hidden">
+        {"products" in e
+          ? e.products?.map(p => (
+              <ProductLink key={p.url} product={p} images={images} />
+            ))
+          : null}
       </div>
     </div>
+  </div>
+)
+
+const formatDate = (dateString: string): string =>
+  new Date(dateString).toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+  })
+
+const experienceTime = (e: { start: string; end?: string }): string => {
+  const durStr = formatDuration(
+    intervalToDuration({
+      start: new Date(e.start),
+      end: e.end ? new Date(e.end) : new Date(),
+    }),
+    { format: ["years", "months"] },
   )
-}
 
-const ExperienceChildren = ({ e }: { e: ParsedExperience }) => {
-  const org = orgs[e.org]
+  const endStr = e.end ? formatDate(e.end) : "Present"
 
-  return (
-    <>
-      <h4 className="mb-0">{e.position}</h4>
-
-      <a href={org.url} target="_blank" rel="noreferrer">
-        {org.name}
-      </a>
-      <br />
-
-      <span>{`${e.start} - ${e.end} · ${e.duration}`}</span>
-
-      <p dangerouslySetInnerHTML={{ __html: e.html }} />
-    </>
-  )
-}
-
-const EducationChildren = ({ e }: { e: ParsedEducation }) => {
-  const org = orgs[e.org]
-
-  return (
-    <>
-      <h4 className="mb-0">
-        <a href={org.url} target="_blank" rel="noreferrer">
-          {org.name}
-        </a>
-      </h4>
-
-      <p dangerouslySetInnerHTML={{ __html: e.html }} />
-
-      <span>{`${e.start} - ${e.end}`}</span>
-    </>
-  )
-}
-
-const Award = ({ e }: { e: AwardProps }) => {
-  const org = orgs[e.org]
-
-  return (
-    <div>
-      <h4 className="mb-0">
-        <a href={e.url} target="_blank" rel="noreferrer">
-          <strong>{e.what}</strong>
-        </a>
-        <span> - </span>
-        <span>{org.name}</span>
-      </h4>
-
-      <span>{e.when}</span>
-      <br />
-    </div>
-  )
+  return `${formatDate(e.start)} - ${endStr} · ${durStr}`
 }
 
 export default function CV(): React.JSX.Element {
-  const { experience, education } = useLoaderData<typeof loader>()
+  const { experience, education, cv } = useLoaderData<typeof loader>()
 
   return (
     <main className="prose prose-sky m-6 max-w-none print:prose-sm print:m-0 sm:m-12 md:m-16">
       <Header
         name={Strings.name}
         location="United States or Remote"
-        email={orgs.agape.email}
-        phone={undefined}
-        website={orgs.agape.url}
+        email={cv.head.email}
+        phone={cv.head.phone}
+        website={cv.head.url}
         linkedin="adelnizamuddin"
       />
 
@@ -304,8 +276,17 @@ export default function CV(): React.JSX.Element {
         <h3 className="mb-0">Experience</h3>
 
         {experience.map(e => (
-          <OrgAndProducts key={e.org} e={e} images={images}>
-            <ExperienceChildren e={e} />
+          <OrgAndProducts key={e.title + e.org.name} e={e} images={images}>
+            <h4 className="mb-0">{e.title}</h4>
+
+            <a href={e.org.url} target="_blank" rel="noreferrer">
+              {e.org.name}
+            </a>
+            <br />
+
+            <span>{experienceTime(e)}</span>
+
+            <p dangerouslySetInnerHTML={{ __html: e.html }} />
           </OrgAndProducts>
         ))}
       </section>
@@ -314,8 +295,16 @@ export default function CV(): React.JSX.Element {
         <h3 className="mb-0">Education</h3>
 
         {education.map(e => (
-          <OrgAndProducts key={e.org} e={e} images={images}>
-            <EducationChildren e={e} />
+          <OrgAndProducts key={e.degreeMD} e={e} images={images}>
+            <h4 className="mb-0">
+              <a href={e.org.url} target="_blank" rel="noreferrer">
+                {e.org.name}
+              </a>
+            </h4>
+
+            <p dangerouslySetInnerHTML={{ __html: e.html }} />
+
+            <span>{experienceTime(e)}</span>
           </OrgAndProducts>
         ))}
       </section>
@@ -325,7 +314,7 @@ export default function CV(): React.JSX.Element {
 
         <span
           dangerouslySetInnerHTML={{
-            __html: Object.values(skills).join(" •&nbsp"),
+            __html: Object.values(cv.techSkills).join(" •&nbsp"),
           }}
         />
       </section>
@@ -333,9 +322,18 @@ export default function CV(): React.JSX.Element {
       <section>
         <h3 className="mb-0">Honors & Awards</h3>
 
-        {awards.map(e => (
-          <OrgAndProducts key={e.org} e={e} images={images}>
-            <Award e={e} />
+        {cv.awards.map(e => (
+          <OrgAndProducts key={e.url} e={e} images={images}>
+            <h4 className="mb-0">
+              <a href={e.url} target="_blank" rel="noreferrer">
+                <strong>{e.title}</strong>
+              </a>
+              <span> - </span>
+              <span>{e.org.name}</span>
+            </h4>
+
+            <span>{formatDate(e.date)}</span>
+            <br />
           </OrgAndProducts>
         ))}
       </section>

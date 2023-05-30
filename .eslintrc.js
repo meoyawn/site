@@ -14,12 +14,6 @@ module.exports = {
   },
   plugins: ["@typescript-eslint"],
   rules: {
-    eqeqeq: ["error", "always"],
-    "no-console": "error",
-
-    "@typescript-eslint/require-array-sort-compare": "error",
-    "@typescript-eslint/no-for-in-array": "error",
-    "@typescript-eslint/no-var-requires": "error",
     "@typescript-eslint/ban-ts-comment": [
       "error",
       {
@@ -27,5 +21,18 @@ module.exports = {
         minimumDescriptionLength: 1,
       },
     ],
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      {
+        prefer: "type-imports",
+        fixStyle: "inline-type-imports",
+      },
+    ],
+    "@typescript-eslint/no-for-in-array": "error",
+    "@typescript-eslint/no-var-requires": "error",
+    "@typescript-eslint/require-array-sort-compare": "error",
+
+    eqeqeq: ["error", "always"],
+    "no-console": "error",
   },
 }

@@ -1,5 +1,3 @@
-import { Layout } from "./app/Layout"
-import stylesheet from "./tailwind.css"
 import {
   json,
   type LinksFunction,
@@ -7,7 +5,6 @@ import {
   type TypedResponse,
   type V2_MetaFunction,
 } from "@remix-run/cloudflare"
-import { cssBundleHref } from "@remix-run/css-bundle"
 import {
   Links,
   LiveReload,
@@ -16,6 +13,8 @@ import {
   ScrollRestoration,
 } from "@remix-run/react"
 import React, { type JSX } from "react"
+import { Layout } from "./app/Layout"
+import stylesheet from "./tailwind.css"
 
 const hostURL = (host: string, path?: string): string => {
   const proto =
@@ -43,7 +42,6 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
 
 // noinspection JSUnusedGlobalSymbols
 export const links: LinksFunction = () => [
-  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: stylesheet },
   { rel: "icon", href: "/icon.svg" },
 ]

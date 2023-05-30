@@ -13,7 +13,7 @@ marked.use(
       const language = hljs.getLanguage(lang) ? lang : "plaintext"
       return hljs.highlight(code, { language }).value
     },
-  }) as marked.MarkedExtension,
+  }) ,
 )
 
 const opts: marked.MarkedOptions = { mangle: false }
