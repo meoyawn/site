@@ -16,4 +16,4 @@ marked.use(
 
 const opts: marked.MarkedOptions = { mangle: false }
 
-export const md2html = (s: string): string => marked(s, opts)
+export const markedHTML = (s: string): string => marked(s, opts)

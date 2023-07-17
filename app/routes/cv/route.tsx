@@ -8,7 +8,7 @@ import { useLoaderData } from "@remix-run/react"
 import { formatDuration, intervalToDuration } from "date-fns"
 import { load as yamlParse } from "js-yaml"
 import React, { type JSX, type ReactNode } from "react"
-import { md2html } from "../../app/marked"
+import { remarkHTML } from "../../app/remark"
 import { Strings } from "../../app/strings"
 import { mergeParentMeta, relativeFetch } from "../../lib/remix"
 import images from "./ogimages.json"
@@ -40,10 +40,10 @@ export const loader = async ({
   const cv = yamlParse(await r.text()) as CvDoc
 
   const exp = cv.experience.map(
-    e => ({ ...e, html: md2html(e.summaryMD) } satisfies ParsedExperience),
+    e => ({ ...e, html: remarkHTML(e.summaryMD) } satisfies ParsedExperience),
   )
   const edu = cv.education.map(
-    e => ({ ...e, html: md2html(e.degreeMD) } satisfies ParsedEducation),
+    e => ({ ...e, html: remarkHTML(e.degreeMD) } satisfies ParsedEducation),
   )
 
   return json({ experience: exp, education: edu, cv })

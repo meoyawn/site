@@ -10,8 +10,8 @@ import grayMatter from "gray-matter"
 import hljsTheme from "highlight.js/styles/github-dark-dimmed.css"
 import React, { type JSX } from "react"
 import { hostURL, relativeFetch, type HttpPath } from "../lib/remix"
-import { type Post } from "./articles._index"
-import { md2html } from "../app/marked"
+import { type Post } from "../routes/articles._index"
+import { markedHTML } from "./marked"
 
 export const loader = async ({
   params,
@@ -26,14 +26,15 @@ export const loader = async ({
   if (!params.slug) throw new Error("Missing slug")
 
   const r = await relativeFetch(request, `/blog/${params.slug}.md`)
-  const { content, data } = grayMatter(await r.text(),{  })
+  const { content, data } = grayMatter(await r.text(), {})
   return json({
-    html: md2html(content),
+    html: markedHTML(content),
     post: data as Post,
     host: request.headers.get("host") || "localhost:3000",
   })
 }
 
+// noinspection JSUnusedGlobalSymbols
 export const links: LinksFunction = () => [
   {
     rel: "stylesheet",
@@ -41,6 +42,7 @@ export const links: LinksFunction = () => [
   },
 ]
 
+// noinspection JSUnusedGlobalSymbols
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
   if (!data) throw new Error("Missing data")
   const { host, post } = data
@@ -54,6 +56,7 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
   ]
 }
 
+// noinspection JSUnusedGlobalSymbols
 export default function Article(): JSX.Element {
   const { html, post } = useLoaderData<typeof loader>()
 

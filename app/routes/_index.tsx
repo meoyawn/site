@@ -1,7 +1,7 @@
 import { type V2_MetaFunction } from "@remix-run/cloudflare"
 import React, { type JSX } from "react"
 import { homeMD } from "../app/homeMD"
-import { md2html } from "../app/marked"
+import { remarkHTML } from "../app/remark"
 
 export const meta: V2_MetaFunction = () => [
   { title: "Adel Nizamutdinov" },
@@ -11,8 +11,8 @@ export const meta: V2_MetaFunction = () => [
 export default function Index(): JSX.Element {
   return (
     <main
-      className="prose mx-auto max-w-prose p-4"
-      dangerouslySetInnerHTML={{ __html: md2html(homeMD) }}
+      className="prose m-6 max-w-prose sm:m-12 md:m-16"
+      dangerouslySetInnerHTML={{ __html: remarkHTML(homeMD) }}
     />
   )
 }
