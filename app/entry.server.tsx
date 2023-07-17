@@ -4,23 +4,24 @@
  * For more information, see https://remix.run/file-conventions/entry.server
  */
 
-import { type EntryContext } from "@remix-run/cloudflare"
+import type { AppLoadContext, EntryContext } from "@remix-run/cloudflare"
 import { RemixServer } from "@remix-run/react"
 import isbot from "isbot"
 import { renderToReadableStream } from "react-dom/server"
 
-// noinspection JSUnusedGlobalSymbols
 export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
   remixContext: EntryContext,
-) {
+  loadContext: AppLoadContext,
+): Promise<Response> {
   const body = await renderToReadableStream(
     <RemixServer context={remixContext} url={request.url} />,
     {
       signal: request.signal,
       onError(error: unknown) {
+        // Log streaming rendering errors from inside the shell
         // eslint-disable-next-line no-console
         console.error(error)
         responseStatusCode = 500

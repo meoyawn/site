@@ -5,16 +5,17 @@ import {
 import { type V2_ServerRuntimeMetaArgs } from "@remix-run/server-runtime"
 
 export type HttpPath = `/${string}` | ""
-export type HttpURL = `http${"s" | ""}://${string}${HttpPath}`
 
-export const hostURL = (host: string, path?: HttpPath): HttpURL => {
-  const proto =
-    host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https"
-
-  return `${proto}://${host}${path ?? ""}`
+export const hostURL = (host: string, path?: HttpPath): URL => {
+  const url = new URL(path ?? "", `https://${host}`)
+  url.protocol =
+    host.includes("localhost") || host.includes("127.0.0.1")
+      ? "http:"
+      : "https:"
+  return url
 }
 
-const absURL = (req: Request, path?: HttpPath): HttpURL =>
+const absURL = (req: Request, path?: HttpPath): URL =>
   hostURL(req.headers.get("host") || "127.0.0.1:3000", path)
 
 export const relativeFetch = (

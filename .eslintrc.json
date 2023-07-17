@@ -1,38 +1,36 @@
-/** @type {import("eslint").Linter.Config} */
-module.exports = {
-  extends: [
+{
+  "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "@remix-run/eslint-config",
-    "@remix-run/eslint-config/node",
+    "@remix-run/eslint-config/node"
   ],
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    project: "tsconfig.json",
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json"
   },
-  plugins: ["@typescript-eslint"],
-  rules: {
+  "plugins": ["@typescript-eslint"],
+  "rules": {
     "@typescript-eslint/ban-ts-comment": [
       "error",
       {
         "ts-ignore": "allow-with-description",
-        minimumDescriptionLength: 1,
-      },
+        "minimumDescriptionLength": 1
+      }
     ],
     "@typescript-eslint/consistent-type-imports": [
       "error",
       {
-        prefer: "type-imports",
-        fixStyle: "inline-type-imports",
-      },
+        "prefer": "type-imports",
+        "fixStyle": "inline-type-imports"
+      }
     ],
     "@typescript-eslint/no-for-in-array": "error",
     "@typescript-eslint/no-var-requires": "error",
     "@typescript-eslint/require-array-sort-compare": "error",
-
-    eqeqeq: ["error", "always"],
-    "no-console": "error",
-  },
+    "eqeqeq": ["error", "always"],
+    "no-console": "error"
+  }
 }

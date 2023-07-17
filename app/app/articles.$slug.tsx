@@ -1,6 +1,3 @@
-import { md2html } from "../app/marked"
-import { hostURL, type HttpPath, relativeFetch } from "../lib/remix"
-import { type Post } from "./articles._index"
 import {
   json,
   type LinksFunction,
@@ -12,6 +9,9 @@ import { useLoaderData } from "@remix-run/react"
 import grayMatter from "gray-matter"
 import hljsTheme from "highlight.js/styles/github-dark-dimmed.css"
 import React, { type JSX } from "react"
+import { hostURL, relativeFetch, type HttpPath } from "../lib/remix"
+import { type Post } from "../routes/articles._index"
+import { md2html } from "./marked"
 
 export const loader = async ({
   params,
