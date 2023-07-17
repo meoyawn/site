@@ -11,9 +11,9 @@
     "dev:blog": "organize-md --watch organize-blog.yaml",
     "dev:remix": "remix dev --no-restart -c \"bun run start\"",
     "lint": "eslint app/ --fix",
+    "start": "wrangler pages dev --compatibility-date=2023-06-21 ./public",
     "test": "bun test",
-    "typecheck": "tsc",
-    "start": "wrangler pages dev --compatibility-date=2023-06-21 ./public"
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@remix-run/cloudflare": "^1.16.0",

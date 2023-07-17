@@ -10,8 +10,8 @@ import grayMatter from "gray-matter"
 import hljsTheme from "highlight.js/styles/github-dark-dimmed.css"
 import React, { type JSX } from "react"
 import { hostURL, relativeFetch, type HttpPath } from "../lib/remix"
-import { type Post } from "../routes/articles._index"
-import { md2html } from "./marked"
+import { type Post } from "./articles._index"
+import { md2html } from "../app/marked"
 
 export const loader = async ({
   params,
@@ -26,7 +26,7 @@ export const loader = async ({
   if (!params.slug) throw new Error("Missing slug")
 
   const r = await relativeFetch(request, `/blog/${params.slug}.md`)
-  const { content, data } = grayMatter(await r.text())
+  const { content, data } = grayMatter(await r.text(),{  })
   return json({
     html: md2html(content),
     post: data as Post,
