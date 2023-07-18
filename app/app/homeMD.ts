@@ -1,5 +1,5 @@
 export const homeMD = `
-I'm a computer programmer 🍜
+Yet another computer programmer 🍜
 
 Launched
 [Listenbox](https://listenbox.app),
@@ -11,7 +11,7 @@ In my spare time I'm creating fun toys like
 [Moscow Cancer](https://moscow-cancer.vercel.app),
 [Storagecast](https://storagecast.vercel.app),
 [MiniHTML](https://minihtml.pages.dev/).
-You can find more of my work on [GitHub](https://github.com/meoyawn).
+More open source stuff on [GitHub](https://github.com/meoyawn).
 
 Contact me by [email](mailto:mail@adelnz.com) or on [twitter](https://twitter.com/meoyawn)
 `
